@@ -77,8 +77,7 @@ pca_li=pca$li #the row coordinates i.e. the principal components
 pca_li$Country=rownames(pca_li)
 
 #Country flags 
-#Get the flag codes
-pca_li$iso2 <- countrycode(pca_li$Country, "country.name", "iso2c")
+pca_li$iso2 <- countrycode(pca_li$Country, "country.name", "iso2c") #Get the flag codes
 pca_li = pca_li %>% 
   mutate(code = tolower(iso2))  #Convert to lower case for the geom_flag function 
 
