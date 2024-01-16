@@ -26,24 +26,26 @@ df3=re_all[,c(1,5,13)]
 colnames(df3)=c("value", "Country", "Mod")
 df3=rbind.data.frame(df1, df2, df3)
 
-#Cast the dataframe as this is the appropriate format  
+#Cast the dataframe as this is the appropriate format for the PCA function  
 d1=reshape::cast(df3, Country ~ Mod , value="value")
 d1=d1[-12,] #Exclude France
+rownames(d1)=d1$Country #Give row names country names 
 
-rownames(d1)=d1$Country
+#The PCA function 
 pca=ade4::dudi.pca(d1[,-1],  col.w = c(c(1/4,1/4,1/4,1/4), c(1/2,1/2), c(1/5,1/5,1/5,1/5,1/5)),
          center = TRUE, scale = TRUE, 
          scannf = TRUE, nf = 2)
-2
-100 * pca$eig/sum(pca$eig)
+2 #Use only the two first axes 
+100 * pca$eig/sum(pca$eig) #The % variance explained by each axes 
 
-#Prepare the dataframe for first PCA plot
+#Prepare the dataframe for first PCA plot (the coordinates of the eleven indicators of protection)
+pca_df=pca$co #the column coordinates (the eleven indicators of protection)
+
+#Give them the names of their indicator category 
 groups=c(rep("MPA extent & expansion",4),
 rep("MPA overlap ISRAs", 2),
 rep("MPA governance", 5))
-
-pca_df=pca$co #the column coordinates 
-pca_df$groups=groups
+pca_df$groups=groups #Add the names to the dataframe 
 
 # calculate group centroid locations for the PCA arrows
 centroids <- aggregate(cbind(Comp1,Comp2)~groups,data=pca_df,mean)
@@ -59,12 +61,10 @@ PCA_1=ggplot(gg) +
   paletteer::scale_color_paletteer_d("colorBlindness::paletteMartin") +
   geom_point(data=centroids, aes(x=Comp1, y=Comp2, color=groups), size=0) +
   geom_segment(aes(x=Comp1.centroid, y=Comp2.centroid, xend=Comp1, yend=Comp2, color=groups)) +
-  
-  #geom_label_repel(data=centroids, aes(x=Comp1, y=Comp2, label = groups)) +
   scale_x_continuous(limits = c(-1,1)) +
   scale_y_continuous(limits = c(-1,1)) +
   theme_classic() +
-  theme(legend.position = "none", #c(0.2, 0.85)
+  theme(legend.position = "none", 
         legend.title = element_blank()) +
   xlab("PC1 (57.5%)") + ylab("PC2 (27.7%)")
 PCA_1
@@ -89,7 +89,6 @@ PCA_2=ggplot(pca_li, aes(x=Axis1, y=Axis2)) +
   geom_text_repel(aes(label = rownames(pca$li))) + 
   theme_classic() + 
   xlab("PC1 (57.5%)") + ylab("PC2 (27.7%)")
-
 PCA_2
 
 #Make a grid of all plots 
