@@ -30,15 +30,13 @@ mod6 = glmer(Score6 ~ STATUS_YR + AREA + (1 | Country), data = df_join, family =
 #GLMM of the Max score = 7
 mod7 = glmer(`Total score` ~ STATUS_YR + AREA + (1 | Country), data = df_join, family = poisson(link = "log"))
 
-
 #Table of marginal and conditional r-squared
 RS=rbind(performance::model_performance(mod3)[4:5],
          performance::model_performance(mod4)[4:5],
          performance::model_performance(mod5)[4:5],
          performance::model_performance(mod6)[4:5],
          performance::model_performance(mod7)[4:5])
-RS$"Group"=c("3","4","5","6","7")
-
+RS$Group=c("3","4","5","6","7")
 
 #Model comparison with AICc 
 options(na.action = "na.fail")
@@ -57,7 +55,6 @@ dd
 
 dd <- dredge(mod7)
 dd
-
 
 #Marginal effects Marine protected area size 
 p.3 <- visreg(mod3,  scale="response", "AREA", line.par = list(col = "red"), plot=FALSE)
@@ -91,7 +88,13 @@ p1=ggplot() +
 
 p1
 
-#Year plot 
+#Marginal effects Marine protected area year of establishment 
+p.3 <- visreg(mod3,  scale="response", "STATUS_YR", line.par = list(col = "red"), plot=FALSE)
+p.4 <- visreg(mod4,  scale='response', "STATUS_YR", plot = FALSE)
+p.5 <- visreg(mod5,  scale='response', "STATUS_YR", plot = FALSE)
+p.6 <- visreg(mod6,  scale='response', "STATUS_YR", plot = FALSE)
+p.7 <- visreg(mod7,  scale='response', "STATUS_YR", plot = FALSE)
+
 dplyr::bind_rows(
   dplyr::mutate(p.3$fit, plt = "P3"),
   dplyr::mutate(p.4$fit, plt = "P4"),
@@ -153,7 +156,6 @@ re_all$term = factor(re_all$term, levels=re7_df$term)
 re_all$Group = as.factor(re_all$Group)
 
 #Add flags 
-#Get the flag codes
 re_all$iso2 <- countrycode(re_all$term, "country.name", "iso2c")
 re_all = re_all %>% 
   mutate(code = tolower(iso2))  #Convert to lower case for the geom_flag function 
@@ -171,9 +173,6 @@ p_re = ggplot(re_all, aes(x=term, y=estimate, colour=Group)) +
   coord_flip()
 p_re
 
-ggpubr::ggarrange(p_re,ggpubr::ggarrange(p1, p2, ncol=1), common.legend = T, legend="right")
-
-RS$Group=c("3","4","5","6","7")
 
 #Barplot of R-squared
 gRS=ggplot(reshape::melt(RS), aes(x=Group, y=value, fill=forcats::fct_rev(variable))) +
@@ -195,6 +194,7 @@ RE_in = p_re +
   ggmap::inset(ggplotGrob(gRS), xmin = 0.2, xmax = 4, ymin = 1.5, ymax = 3)
 RE_in
 
+# Grid of all plots 
 GG = ggpubr::ggarrange(RE_in,ggpubr::ggarrange(p2, p1, ncol=1, labels = c("B", "C")), widths = c(1, 0.65),
                        common.legend = T, legend="right", labels=c("A",""))
 GG
