@@ -38,7 +38,9 @@ pca=ade4::dudi.pca(d1[,-1],  col.w = c(c(1/4,1/4,1/4,1/4), c(1/2,1/2), c(1/5,1/5
 2 #Use only the two first axes 
 100 * pca$eig/sum(pca$eig) #The % variance explained by each axes 
 
-#Prepare the dataframe for first PCA plot (the coordinates of the eleven indicators of protection)
+
+#------------- The first PCA plot (the coordinates of the eleven indicators of protection)
+#Prepare the dataframe for the plot 
 pca_df=pca$co #the column coordinates (the eleven indicators of protection)
 
 #Give them the names of their indicator category 
@@ -69,7 +71,8 @@ PCA_1=ggplot(gg) +
   xlab("PC1 (57.5%)") + ylab("PC2 (27.7%)")
 PCA_1
 
-# Prepare the dataframe for the first PCA plot 
+#------------- The second PCA plot (the coordinates of the countries in the space)
+# Prepare the dataframe 
 pca_li=pca$li #the row coordinates i.e. the principal components 
 pca_li$Country=rownames(pca_li)
 
