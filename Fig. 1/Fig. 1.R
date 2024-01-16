@@ -50,7 +50,7 @@ df_yr_cast_area=df_yr_cast_area[,-c(8,9)]
 df_yr_melt_area=reshape2::melt(df_yr_cast_area, id = c(1,2))
 colnames(df_yr_melt_area)[3]="IUCN category"
 
-#Cumulative number of MPAs cumulatively by IUCN categories 
+#Cumulative number of MPAs by IUCN categories 
 cc <- scales::seq_gradient_pal("blue", "yellow", "Lab")(seq(0,1,length.out=8))
 
 df_yr_melt_pa$`IUCN cat` %>% as.factor()
@@ -61,6 +61,7 @@ df_yr_melt_pa$Year=as.numeric(paste(df_yr_melt_pa$Year))
 df_yr_melt_pa$`IUCN category` <- factor(df_yr_melt_pa$`IUCN category`,levels=c("Ia", "Ib", "II", "III", "IV", "V", "VI", "Other"))
 df_yr_melt_area$`IUCN category` <- factor(df_yr_melt_area$`IUCN category`,levels=c("Ia", "Ib", "II", "III", "IV", "V", "VI", "Other"))
 
+#Area chart of the cumulative number of marine protected areas
 a1 = 
   ggplot(df_yr_melt_pa, aes()) + 
   geom_area(aes(x=Year, y = value, fill = `IUCN category`, color= `IUCN category`), position = position_stack(reverse = TRUE)) +
@@ -81,6 +82,7 @@ as_ggplot(leg)
 #Cumulative protected area (km2) cumulatively by IUCN categories 
 df_yr_melt_area$Year=as.numeric(paste(df_yr_melt_area$Year))
 
+#Area chart of the cumulative marine area protected 
 a2 = ggplot(df_yr_melt_area, aes(x=Year, y = value, fill = `IUCN category`, color= `IUCN category`)) + 
   geom_area(aes(x=Year, y = value, fill = `IUCN category`, color= `IUCN category`), position = position_stack(reverse = TRUE)) +
   ylab(expression ("Cumulative marine area protected "~(km^2))) +
@@ -95,8 +97,7 @@ a2 = ggplot(df_yr_melt_area, aes(x=Year, y = value, fill = `IUCN category`, colo
 
 a2
 
-##----------- Create single barplots to put on the right of both panels  
-
+#--Single barplots to put on the right of both panels  
 #Number of MPAs
 df_2022_pa=df_yr_melt_pa[df_yr_melt_pa$Year == 2022,]
 df_2022_pa$"MPA_type"=c(rep("No-take", 20),rep("Partial", 20))
@@ -141,6 +142,7 @@ b2 = ggplot(df_2022_area, aes(x=Year, y = value, fill= MPA_type, color=MPA_type)
         panel.grid.minor = element_blank())
 b2
 
+#--------- Make the final grid of all plots 
 gg3 = ggpubr::ggarrange(a1, NULL, b1,
                         a2, NULL, b2, ncol = 6, widths=c(0.85, -0.10, 0.15, 0.85, -0.10, 0.15), 
                         labels=c("A", "", "", "B", "", ""),
@@ -148,6 +150,7 @@ gg3 = ggpubr::ggarrange(a1, NULL, b1,
                         align="hv", common.legend = T, legend = "right")
 gg3
 
-ggsave("Figure 2 - Area plots of trends in cumulative marine area protected with barplots on side_1312_2023.jpeg", 
+#-- Save the figure 
+ggsave("Figure 1 - Area plots of trends in cumulative marine area protected with barplots on side.jpeg", 
        gg3, width = 500*0.7, height = 350*0.7*0.6, units = "mm") 
 
