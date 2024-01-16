@@ -198,6 +198,7 @@ gRS=ggplot(reshape::melt(RS), aes(x=Group, y=value, fill=forcats::fct_rev(variab
   ylab("R-squared") + xlab("")
 gRS  
 
+#Add the barplot as inset to the scatterplot of predicted random effects
 RE_in = p_re +
   ggmap::inset(ggplotGrob(gRS), xmin = 0.2, xmax = 4, ymin = 1.5, ymax = 3)
 RE_in
