@@ -1,3 +1,11 @@
+##--------------------------------------------------------------------------------------------------------------------##
+##----------------------          Principal Component Analysis (PCA) of the               ----------------------------## 
+##----------------------                eleven indicators of protection                   ----------------------------##
+##--------------------------------------------------------------------------------------------------------------------##
+##---------- Théophile L. Mouton 16/01/2023
+##---------- IUCN SSC SSG 
+
+#Load necessary packages 
 library(ade4)
 library(countrycode)
 library(ggflags)
@@ -18,7 +26,7 @@ df3=re_all[,c(1,5,13)]
 colnames(df3)=c("value", "Country", "Mod")
 df3=rbind.data.frame(df1, df2, df3)
 
-#
+#Cast the dataframe as this is the appropriate format  
 d1=reshape::cast(df3, Country ~ Mod , value="value")
 d1=d1[-12,] #Exclude France
 
@@ -34,13 +42,14 @@ groups=c(rep("MPA extent & expansion",4),
 rep("MPA overlap ISRAs", 2),
 rep("MPA governance", 5))
 
-pca_df=pca$co
+pca_df=pca$co #the column coordinates 
 pca_df$groups=groups
 
-# calculate group centroid locations
+# calculate group centroid locations for the PCA arrows
 centroids <- aggregate(cbind(Comp1,Comp2)~groups,data=pca_df,mean)
 gg <- merge(pca_df,centroids,by="groups",suffixes=c("",".centroid"))
 
+#Make the plot 
 PCA_1=ggplot(gg) + 
   geom_hline(yintercept=0, linetype="dashed", color="darkgrey") +
   geom_vline(xintercept=0, linetype="dashed", color="darkgrey") +
@@ -61,13 +70,12 @@ PCA_1=ggplot(gg) +
 PCA_1
 
 # Prepare the dataframe for the first PCA plot 
-pca_li=pca$li
+pca_li=pca$li #the row coordinates i.e. the principal components 
 pca_li$Country=rownames(pca_li)
 
-#Flags 
+#Country flags 
 #Get the flag codes
 pca_li$iso2 <- countrycode(pca_li$Country, "country.name", "iso2c")
-
 pca_li = pca_li %>% 
   mutate(code = tolower(iso2))  #Convert to lower case for the geom_flag function 
 
@@ -84,9 +92,9 @@ PCA_2=ggplot(pca_li, aes(x=Axis1, y=Axis2)) +
 
 PCA_2
 
-#-------------- 
+#Make a grid of all plots 
 PCA_grid=ggpubr::ggarrange(PCA_1, PCA_2, nrow=1, labels=c("A","B"))
-PCA_grid
 
+#Save the grid as .jpeg file 
 ggsave("PCAs of countries_1812_23.jpeg", PCA_grid, width=300, height = 130, units = "mm")
 
