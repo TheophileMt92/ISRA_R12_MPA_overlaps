@@ -17,7 +17,7 @@ load(here::here("Fig. 5", "DF_melt.Rdata"))
 load(here::here("Fig. 5","df_scat_melt2.Rdata"))
 load(here::here("Fig. 5","re_all.Rdata"))
 
-#Create the dataframe for the PCA
+#Create the dataframe for PCA
 df1=DF_melt[,c(1,7,4)]
 colnames(df1)=c("Country", "Mod", "value")
 df2=df_scat_melt2[,c(1,2,3)]
@@ -53,7 +53,7 @@ pca_df$groups=groups #Add the names to the dataframe
 centroids <- aggregate(cbind(Comp1,Comp2)~groups,data=pca_df,mean)
 gg <- merge(pca_df,centroids,by="groups",suffixes=c("",".centroid"))
 
-#Make the plot 
+#The plot 
 PCA_1=ggplot(gg) + 
   geom_hline(yintercept=0, linetype="dashed", color="darkgrey") +
   geom_vline(xintercept=0, linetype="dashed", color="darkgrey") +
@@ -84,6 +84,7 @@ pca_li = pca_li %>%
 
 rownames(pca$li)=c("CHL", "CRI", "PAN", "MEX", "ECU", "NIC", "COL", "HND", "PER", "SLV", "GTM")
 
+#The plot 
 PCA_2=ggplot(pca_li, aes(x=Axis1, y=Axis2)) + 
   geom_hline(yintercept=0, linetype="dashed", color="darkgrey") +
   geom_vline(xintercept=0, linetype="dashed", color="darkgrey") +
