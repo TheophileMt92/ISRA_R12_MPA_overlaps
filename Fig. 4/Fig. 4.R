@@ -209,3 +209,40 @@ GG
 
 ggsave("Fig. 4.jpeg", GG, width = 280, height = 200, units = "mm")
 
+#----- Representing species considered as Conservation Value 
+TableA4=na.omit(st_read("Table A4.xlsx"))
+
+gz = ggplot(TableA4, aes(y=Number.of.management.plans*-1, 
+                         x=reorder(Common.name, -Number.of.management.plans), fill=IUCN.Red.List.Threat.status)) + 
+  geom_bar(stat = 'identity') +
+  scale_y_continuous(breaks= scales::pretty_breaks(), expand=c(0,0), 
+                     labels=c(10,8,6,4,2,0)) +
+  scale_x_discrete(position = "top") +
+  scale_fill_manual(breaks = c("CR", "EN", "VU", "NT", "LC", "DD", "NA"),
+                     values = c("CR" = "#D81E05", "EN" = "#FC7F3F", "VU" = "#F9E814", "NT" = "#CCE226", "LC" = "#60C659", "DD" = "#D1D1C6", "NA" = "#C1B5A5"),
+                    labels  = c("CR", "EN", "VU", "NT", "LC", "DD", "NA"),
+                    name = "IUCN Red List \nthreat status") +
+  guides(fill = guide_legend(reverse = TRUE)) +
+  theme_classic() +
+#  coord_flip() +
+  theme(axis.text.x = element_text(angle = -60, vjust=0, hjust=1)) +
+  xlab(NULL) + ylab("Number of management plans") #+ 
+  #ggtitle("Species considered as Conservation Value")
+gz
+
+GGb = ggpubr::ggarrange(RE_in,ggpubr::ggarrange(p2, p1, ncol=1, labels = c("C", "D")), widths = c(1, 0.65),
+                       common.legend = T, legend="right", labels=c("B",""))
+
+blank <- ggplot() + theme_void()
+
+GG2 = ggpubr::ggarrange(
+ggpubr::ggarrange(blank, gz, widths = c(0.045, 0.955), labels=c("A", "")),
+                  GGb, nrow = 2, ncol = 1, 
+                  heights = c(0.6, 1), align="hv")
+
+ggsave("Fig. 4b.jpeg", GG2, width = 280, height = 200*1.4, units = "mm")
+
+
+
+
+
