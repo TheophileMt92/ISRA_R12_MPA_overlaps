@@ -38,7 +38,13 @@ pca=ade4::dudi.pca(d1[,-1],  col.w = c(c(1/4,1/4,1/4,1/4), c(1/2,1/2), c(1/5,1/5
 2 #Use only the two first axes 
 100 * pca$eig/sum(pca$eig) #The % variance explained by each axes 
 
+Var=100 * pca$eig/sum(pca$eig)
+Axis=seq(1,10, by=1)
 
+df = cbind(Var, Axis)
+ggplot(df, aes(x=factor(Axis), y = Var)) + 
+  geom_bar(stat="identity") +
+  ylab("% Variation explained") + xlab("PCA axis")
 #------------- The first PCA plot (the coordinates of the eleven indicators of protection)
 #Prepare the dataframe for the plot 
 pca_df=pca$co #the column coordinates (the eleven indicators of protection)
@@ -99,4 +105,39 @@ PCA_grid=ggpubr::ggarrange(PCA_1, PCA_2, nrow=1, labels=c("A","B"))
 
 #Save the grid as .jpeg file 
 ggsave("PCAs of countries_1812_23.jpeg", PCA_grid, width=300, height = 130, units = "mm")
+
+#----- Run a cluster analysis on the first two axes 
+Axes1_2 = pca_li[, c("Axis1", "Axis2")]  # Assuming the columns are named "Axis1" and "Axis2"
+
+# Compute the number of clusters using NbClust
+nbclust_result <- NbClust(Axes1_2, diss=NULL, distance="euclidean", method="ward.D2", min.nc=2, max.nc=9, index="all")
+
+# Print the result
+print(nbclust_result)
+nbclust_result$Best.partition
+
+as.data.frame(nbclust_result$Best.partition)
+
+pca_li_clusters = cbind.data.frame(pca_li,as.data.frame(nbclust_result$Best.partition)) 
+names(pca_li_clusters)[6]="Clusters"
+pca_li_clusters$Clusters=as.factor(pca_li_clusters$Clusters)
+#The plot 
+PCA_2=ggplot(pca_li_clusters, aes(x=Axis1, y=Axis2, group=Clusters)) + 
+  geom_hline(yintercept=0, linetype="dashed", color="darkgrey") +
+  geom_vline(xintercept=0, linetype="dashed", color="darkgrey") +
+  geom_point() +
+  scale_x_continuous(limits=c(-4, 4)) +
+  scale_y_continuous(limits=c(-4,4)) +
+  stat_ellipse(data = pca_li_clusters ,geom="polygon", aes(fill=Clusters),
+               alpha = 0.2,
+               show.legend = FALSE, 
+               level = 0.95) +
+  geom_flag(data= pca_li_clusters, aes(country = code), size = 10)  +
+  geom_text_repel(aes(label = rownames(pca$li))) + 
+  theme_classic() + 
+  xlab("PC1 (57.5%)") + ylab("PC2 (27.7%)")
+PCA_2
+
+
+
 
