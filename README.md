@@ -18,11 +18,12 @@ Ilena Zanellaat, Rima W. Jabado
 
 ## R packages 
 
-To run the R code contained in this repository, 22 packages are needed to be installed, use the code below to install them:  
+To run the R code contained in this repository, 23 packages are needed to be installed, use the code below to install them:  
 
 ```bash
 if (!requireNamespace(tidyverse, quietly = TRUE)) {install.packages(tidyverse)}
 if (!requireNamespace(sf, quietly = TRUE)) {install.packages(sf)}
+if (!requireNamespace(raster, quietly = TRUE)) {install.packages(raster)}
 if (!requireNamespace(ggplot2, quietly = TRUE)) {install.packages(ggplot2)}
 if (!requireNamespace(lwgeom, quietly = TRUE)) {install.packages(lwgeom)}
 if (!requireNamespace(data.table, quietly = TRUE)) {install.packages(data.table)}
@@ -53,6 +54,10 @@ The R scripts are as follows:
 1. Fig. 1.R - Area charts of temporal trends (1935 - 2023) in marine protected area  (A) numbers and (B) size in the Central and South American Pacific. 
 
 2. Fig. 2.R - Scatterplots of marine protected area (A) expansion 2010-2023 (B) extent in 2023 and (C) overlaps with ISRAS in the Central and South American Pacific. 
+
+The two following scripts need to be ran before, to produce the dataframes necessary to make the plots:
+- MPA expansion and extent.R
+- ISRAs overlap with MPAs.R 
 
 3. Fig. 4.R - Results of Shark Robustness Management Index for Central and South American Pacific MPAs as obtained from Generalised Linear Mixed-effects Models.
 
