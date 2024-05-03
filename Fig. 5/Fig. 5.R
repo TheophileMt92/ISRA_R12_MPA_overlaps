@@ -116,28 +116,3 @@ nbclust_result <- NbClust(Axes1_2, diss=NULL, distance="euclidean", method="ward
 print(nbclust_result)
 nbclust_result$Best.partition
 
-as.data.frame(nbclust_result$Best.partition)
-
-pca_li_clusters = cbind.data.frame(pca_li,as.data.frame(nbclust_result$Best.partition)) 
-names(pca_li_clusters)[6]="Clusters"
-pca_li_clusters$Clusters=as.factor(pca_li_clusters$Clusters)
-#The plot 
-PCA_2=ggplot(pca_li_clusters, aes(x=Axis1, y=Axis2, group=Clusters)) + 
-  geom_hline(yintercept=0, linetype="dashed", color="darkgrey") +
-  geom_vline(xintercept=0, linetype="dashed", color="darkgrey") +
-  geom_point() +
-  scale_x_continuous(limits=c(-4, 4)) +
-  scale_y_continuous(limits=c(-4,4)) +
-  stat_ellipse(data = pca_li_clusters ,geom="polygon", aes(fill=Clusters),
-               alpha = 0.2,
-               show.legend = FALSE, 
-               level = 0.95) +
-  geom_flag(data= pca_li_clusters, aes(country = code), size = 10)  +
-  geom_text_repel(aes(label = rownames(pca$li))) + 
-  theme_classic() + 
-  xlab("PC1 (57.5%)") + ylab("PC2 (27.7%)")
-PCA_2
-
-
-
-
